@@ -19,9 +19,19 @@
 
 The application interface is currently Chinese; these documents are bilingual. This is not a game client, matchmaking system, presence detector or Ubisoft/Tencent integration.
 
+## Small decisions that make gathering easier
+
+- **Evening hours first.** 17:00–23:00 is highlighted and placed above daytime slots, matching when the group usually plays.
+- **Two small choices, not one long menu.** Pick an hour, then a quarter hour; the last slot is 23:00.
+- **Ready whenever is not a fake clock time.** “Any time” reads as “Ready whenever” on the card instead of forcing a made-up arrival estimate.
+- **Your teammate, your pin.** Browser-local pinning keeps a frequent partner first without rearranging everyone else's shared board.
+- **Five at a glance.** Larger rosters collapse after five, while the remaining players stay one tap away.
+- **Status is not just a color.** Coming, absent and undecided also have distinct symbols and text.
+- **Keep the frequent action obvious.** Voice join is the primary button; rename/delete stay behind the pencil, with deletion confirmation.
+- **A row that fits a phone.** Compact status controls and the arrival selector share the member row; long names truncate rather than push everything apart.
+
 ## Screenshots
 
-These are captures of the actual board UI populated with **fictional demo players**, not real friends or production data. The desktop and phone captures use a browser viewport; they are not claims of native iOS testing. Some personal navigation shown in the deployment capture is deliberately omitted from the portable source.
 
 | Phone board | Arrival-time picker |
 |---|---|
