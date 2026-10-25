@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Player Alpha",
+    "status": "yes",
+    "time": "19:00"
+  },
+  {
+    "name": "Player Bravo",
+    "status": "yes",
+    "time": "20:15"
+  },
+  {
+    "name": "Player Charlie",
+    "status": "yes",
+    "time": "any"
+  },
+  {
+    "name": "Player Delta",
+    "status": "maybe",
+    "time": "21:00"
+  },
+  {
+    "name": "Player Echo",
+    "status": "no",
+    "time": "21:00"
+  }
+]
