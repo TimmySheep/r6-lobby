@@ -4,7 +4,7 @@
 
 [中文说明 →](README.zh-CN.md)
 
-> Private review snapshot. The repository must remain private until its owner explicitly approves publication. No project-wide open-source license has been selected.
+> Public source snapshot. No project-wide open-source license has been selected; see the licensing section below.
 
 ![Desktop availability board with a fictional roster](docs/screenshots/desktop.png)
 
