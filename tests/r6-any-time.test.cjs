@@ -43,8 +43,8 @@ assert.equal(order(sortPeople(people, '随时')), '随时,早到,晚到,未定,�
 assert.deepEqual(people.map(p => p.time), ['any', '21:00', '19:00', 'any', 'any']);
 
 // card copy switches to 随时待命, picker trigger shows 任意时间
-assert.ok(source.includes("isAnyTime(p.time)?'随时待命':'约 '+p.time"), 'card hint must show 随时待命 for flexible arrivals');
-assert.ok(source.includes("isAnyTime(p.time)?'任意时间'"), 'picker trigger must show 任意时间 for flexible arrivals');
+assert.ok(source.includes("isAnyTime(p.time)?t('随时待命'):t('约 {time}',{time:p.time})"), 'card hint must localize flexible arrivals separately from concrete times');
+assert.ok(source.includes("isAnyTime(p.time)?t('任意时间')"), 'picker trigger must localize the any-time label');
 assert.ok(source.includes('data-time-any'), 'picker must render the any-time option');
 assert.ok(source.includes("people[index].time=ANY_TIME"), 'selecting any-time must store the any value');
 

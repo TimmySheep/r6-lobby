@@ -1,6 +1,9 @@
-const CACHE_NAME = 'r6-lobby-shell-v2';
+const CACHE_NAME = 'r6-lobby-shell-v3';
 const SHELL_URLS = [
   '/',
+  '/app.js',
+  '/i18n.js',
+  '/manifest.en.webmanifest',
   '/manifest.webmanifest',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
@@ -46,7 +49,7 @@ self.addEventListener('fetch', event => {
         }
         return response;
       } catch {
-        return (await caches.match(new URL('/', self.location.origin).href)) || new Response('当前离线，重新联网后可读取共享名单。', {
+        return (await caches.match(new URL('/', self.location.origin).href)) || new Response('Offline: reconnect to read the shared roster. / 当前离线，重新联网后可读取共享名单。', {
           status: 503,
           headers: { 'Content-Type': 'text/plain; charset=utf-8' }
         });
@@ -55,7 +58,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  if (url.pathname.startsWith('/icons/') || url.pathname === '/manifest.webmanifest') {
+  if (url.pathname.startsWith('/icons/') || SHELL_URLS.includes(url.pathname)) {
     event.respondWith((async () => {
       const cacheKey = new URL(url.pathname, self.location.origin).href;
       const cached = await caches.match(cacheKey);

@@ -2,7 +2,7 @@
 
 **A tiny, self-hosted squad availability board.** Who is playing tonight, when can they join, and who is ready whenever?
 
-[中文说明 →](README.zh-CN.md)
+[中文说明 →](README.zh-CN.md) · [Website ↗](https://apps.timhuang.net/r6-lobby/en/)
 
 > Open source under the [MIT License](LICENSE).
 
@@ -15,9 +15,10 @@
 - Concrete times sort chronologically; flexible arrivals follow them. A browser-local pin can put one teammate first.
 - Add, rename and remove teammates; compact mobile layout; collapse larger groups after five people.
 - Install-to-home-screen guidance, manifest and service worker. API responses are never cached.
+- Simplified Chinese and English UI, with a switcher; the choice is remembered per browser and switching never writes to the shared roster.
 - Optional server-side ntfy message relay. Notification destinations never belong in browser code.
 
-The application interface is currently Chinese; these documents are bilingual. This is not a game client, matchmaking system, presence detector or Ubisoft/Tencent integration.
+The interface ships with Simplified Chinese and English, with the choice remembered per browser. These documents are bilingual too. This is not a game client, matchmaking system, presence detector or Ubisoft/Tencent integration.
 
 ## Small decisions that make gathering easier
 
