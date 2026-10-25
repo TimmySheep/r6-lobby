@@ -4,7 +4,7 @@
 
 [中文说明 →](README.zh-CN.md)
 
-> Public source snapshot. No project-wide open-source license has been selected; see the licensing section below.
+> Open source under the [MIT License](LICENSE).
 
 ![Desktop availability board with a fictional roster](docs/screenshots/desktop.png)
 
@@ -92,4 +92,4 @@ HTTP tests use an isolated synthetic roster and a local ephemeral port; they do 
 
 An independent personal project; not affiliated with, sponsored by or endorsed by Ubisoft or Tencent. Rainbow Six is a trademark of its respective owner. No game assets are bundled.
 
-No project-wide redistribution license has been chosen. Private review and source availability do not by themselves grant an open-source license.
+Licensed under the [MIT License](LICENSE). Third-party trademarks remain the property of their respective owners.
