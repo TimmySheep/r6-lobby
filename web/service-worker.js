@@ -1,4 +1,4 @@
-const CACHE_NAME = 'r6-lobby-shell-v3';
+const CACHE_NAME = 'r6-lobby-shell-v4';
 const SHELL_URLS = [
   '/',
   '/app.js',

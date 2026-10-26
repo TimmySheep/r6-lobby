@@ -9,6 +9,9 @@ vm.runInContext(fs.readFileSync(file,'utf8'),ctx);
 const run = code => vm.runInContext(code,ctx);
 assert.equal(run('locale'),'en');
 assert.equal(run("t('yes')"),'Coming');
+assert.equal(run("t('现在有人在玩吗？')"),'Is anyone playing now?');
+assert.equal(run("t('是')"),'Yes');
+assert.equal(run("t('否')"),'No');
 assert.equal(run("chooseLocale('zh-TW')"),'zh-CN');
 assert.equal(run("chooseLocale('fr-FR')"),'en');
 assert.equal(run("resolveLocale({getItem(){return 'zh-CN'}}, ['en-US'])"),'zh-CN');
@@ -16,6 +19,9 @@ assert.equal(run("resolveLocale({getItem(){throw Error()}}, ['zh-HK'])"),'zh-CN'
 assert.equal(run("t('arrival', {time:'21:15'})"),'Around 21:15');
 run("locale='zh-CN'");
 assert.equal(run("t('yes')"),'来');
+assert.equal(run("t('现在有人在玩吗？')"),'现在有人在玩吗？');
+assert.equal(run("t('是')"),'是');
+assert.equal(run("t('否')"),'否');
 assert.equal(run("t('arrival', {time:'21:15'})"),'约 21:15');
 const locked = vm.createContext({navigator:{languages:['zh-CN'],language:'zh-CN'}});
 vm.runInContext("Object.defineProperty(globalThis,'localStorage',{get(){throw Error('blocked')}})",locked);
@@ -23,6 +29,8 @@ assert.doesNotThrow(()=>vm.runInContext(fs.readFileSync(file,'utf8'),locked),'bl
 assert.equal(vm.runInContext('locale',locked),'zh-CN');
 const html=fs.readFileSync(path.join(__dirname,'../web/index.html'),'utf8');
 assert.ok(!/<h1[^>]*data-i18n=/.test(html),'heading localization must not erase the nested second line');
+assert.ok(html.indexOf('id="game-status-bar"') < html.indexOf('<h1>'),'global game status must appear above the headline');
+assert.ok(html.includes('data-game-playing="true"') && html.includes('data-game-playing="false"'),'global status must expose explicit yes/no controls');
 assert.ok(fs.existsSync(path.join(__dirname,'../web/manifest.en.webmanifest')),'English installation metadata must exist');
 const worker=fs.readFileSync(path.join(__dirname,'../web/service-worker.js'),'utf8');
 assert.ok(worker.includes("'/i18n.js'"),'offline shell must cache localization code');

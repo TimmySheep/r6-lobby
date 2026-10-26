@@ -10,7 +10,8 @@
 
 ## What it does
 
-- Shared **Coming / Not coming / Undecided** availability, with names and arrival times.
+- Shared **Coming / Not coming / Undecided** availability, names and arrival times, plus a separate shared Yes/No switch for whether anyone is playing now.
+- Daily rollover at 01:00 Asia/Shanghai resets member availability to **Undecided** and the global game status to **No**, preserving arrival times.
 - Two-step arrival picker: 09:00–23:00, quarter-hour slots (23:00 is the last slot), plus **Any time / Ready whenever**.
 - Concrete times sort chronologically; flexible arrivals follow them. A browser-local pin can put one teammate first.
 - Add, rename and remove teammates; compact mobile layout; collapse larger groups after five people.
@@ -64,18 +65,19 @@ Set the voice-room button URL in `web/index.html` before deployment; its bundled
 
 Put an HTTPS reverse proxy in front of the loopback server. Serve it at the origin root: the app uses absolute `/api/...`, manifest and worker URLs. Home-screen installation capabilities depend on platform and HTTPS; an offline shell cannot read or update the shared roster.
 
-**There is no authentication or per-player authorization.** Anyone who can reach the application can replace the whole roster, change other people's names/statuses, or send messages when notifications are enabled. This is appropriate only for a deliberately shared, trusted group or an authenticated reverse proxy. Do not advertise an unprotected deployment as private.
+**There is no authentication or per-player authorization.** Anyone who can reach the application can replace the whole roster, change other people's names/statuses, or switch the global game status; they can also send messages when notifications are enabled. This suits groups that accept this collaboration model, or instances protected by an authenticated reverse proxy. An unprotected deployment is not private.
 
 Writes are atomic JSON replacements, not collaborative merges: simultaneous editors can overwrite each other (last write wins). The current client refreshes on page load; it does not provide live push updates. There is no server-side message rate limit: public deployments may receive spam or exhaust notification quotas. Request-size/field limits do not prevent abuse. A notification response means the relay accepted the message, not that a phone displayed it.
 
 ## Data and code
 
 - `web/`: portable frontend, icons, manifest and worker.
-- `server.py`: static serving, `/api/people` store and `/api/note` relay.
+- `daily_reset.py`: resets member status to `maybe` and shared game status to `false` at the daily rollover; paths can be set with environment variables.
+- `server.py`: static serving, `/api/people` roster store, `/api/game-status` global state and `/api/note` relay.
 - `docs/demo-roster.json`: synthetic screenshot data only; not automatically loaded.
 - `tests/`: isolated HTTP checks and frontend regression checks.
 
-The portable snapshot adapts the deployed frontend and backend into one local server. It does not include production infrastructure, credentials, personal roster, backups or deployment history. It does not change the running personal site.
+The portable source contains no production infrastructure, credentials, personal roster or deployment backups. A hosted instance and its data/configuration are operated separately; this repository does not deploy changes by itself.
 
 ## Checks
 

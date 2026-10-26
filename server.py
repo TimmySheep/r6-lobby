@@ -8,6 +8,7 @@ import json, os, tempfile, threading, time
 import unicodedata
 
 DATA = Path(os.environ.get('R6_DATA_FILE', str(Path(__file__).parent / 'data' / 'people.json')))
+GAME_STATUS = Path(os.environ.get('R6_GAME_STATUS_FILE', str(DATA.with_name('game-status.json'))))
 TOPIC = os.environ.get('R6_NTFY_TOPIC', '')
 LOCK = threading.Lock()
 DEFAULTS = []
@@ -18,6 +19,23 @@ def load():
         obj=json.loads(DATA.read_text())
         return obj if isinstance(obj,list) else DEFAULTS
     except Exception: return DEFAULTS
+
+def load_game_status():
+    try:
+        obj=json.loads(GAME_STATUS.read_text())
+        return obj.get('playing') is True if isinstance(obj,dict) else False
+    except Exception:
+        return False
+
+def save_game_status(playing):
+    GAME_STATUS.parent.mkdir(parents=True,exist_ok=True)
+    fd,tmp=tempfile.mkstemp(dir=GAME_STATUS.parent,prefix='.game-status-')
+    try:
+        with os.fdopen(fd,'w') as f:
+            json.dump({'playing':playing},f); f.flush(); os.fsync(f.fileno())
+        os.chmod(tmp,0o640); os.replace(tmp,GAME_STATUS)
+    finally:
+        if os.path.exists(tmp): os.unlink(tmp)
 
 def save(items):
     DATA.parent.mkdir(parents=True,exist_ok=True)
@@ -59,12 +77,27 @@ class Handler(BaseHTTPRequestHandler):
         body=json.dumps(obj,ensure_ascii=False).encode()
         self.send_response(status); self.send_header('Content-Type','application/json; charset=utf-8'); self.send_header('Content-Length',str(len(body))); self.send_header('Cache-Control','no-store'); self.end_headers(); self.wfile.write(body)
     def do_GET(self):
+        if self.path=='/game-status':
+            with LOCK: self.send_json(200,{'playing':load_game_status()})
+            return
         if self.path!='/people': return self.send_json(404,{'error':'not found'})
         with LOCK: self.send_json(200,{'people':load()})
     def do_POST(self):
+        if self.path=='/game-status': return self.handle_game_status()
         if self.path=='/note': return self.handle_note()
         return self.handle_people()
     def do_PUT(self): self.handle_people()
+    def handle_game_status(self):
+        try:
+            length=int(self.headers.get('Content-Length','0'))
+            if not 1<=length<=100: return self.send_json(400,{'error':'invalid_payload'})
+            obj=json.loads(self.rfile.read(length))
+            if not isinstance(obj,dict) or type(obj.get('playing')) is not bool:
+                return self.send_json(400,{'error':'invalid_payload'})
+            with LOCK: save_game_status(obj['playing'])
+            self.send_json(200,{'ok':True,'playing':obj['playing']})
+        except (TypeError,ValueError,json.JSONDecodeError):
+            self.send_json(400,{'error':'invalid_payload'})
     def handle_note(self):
         try:
             length=int(self.headers.get('Content-Length','0'))
@@ -99,6 +132,9 @@ WEB = Path(__file__).parent / 'web'
 class AppHandler(Handler):
     def do_GET(self):
         route = self.path.split('?',1)[0]
+        if route == '/api/game-status':
+            self.path='/game-status'
+            return super().do_GET()
         if route == '/api/people':
             self.path='/people'
             return super().do_GET()
@@ -116,7 +152,7 @@ class AppHandler(Handler):
         self.send_header('X-Content-Type-Options','nosniff')
         self.end_headers(); self.wfile.write(body)
     def do_POST(self):
-        self.path={'/api/people':'/people','/api/note':'/note'}.get(self.path,self.path)
+        self.path={'/api/game-status':'/game-status','/api/people':'/people','/api/note':'/note'}.get(self.path,self.path)
         return super().do_POST()
     def do_PUT(self):
         self.path={'/api/people':'/people'}.get(self.path,self.path)

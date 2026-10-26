@@ -10,6 +10,12 @@ let locale = resolveLocale(safeStorage(), navigator.languages || [navigator.lang
 const messages = {
   "暂时连不上共享数据，请检查网络后刷新。": ["暂时连不上共享数据，请检查网络后刷新。", "Cannot reach the shared board. Check your connection and refresh."],
   "已同步到共享看板": ["已同步到共享看板", "Synced to the shared board"],
+  "开黑状态已同步": ["开黑状态已同步", "Game status synced"],
+  "开黑状态保存失败，请检查网络后重试。": ["开黑状态保存失败，请检查网络后重试。", "Could not save game status. Check your connection and try again."],
+  "开黑状态暂不可用": ["开黑状态暂不可用", "Game status unavailable"],
+  "现在有人在玩吗？": ["现在有人在玩吗？", "Is anyone playing now?"],
+  "是": ["是", "Yes"],
+  "否": ["否", "No"],
   "保存失败，请检查网络后重试。": ["保存失败，请检查网络后重试。", "Could not save. Check your connection and try again."],
   "▴ 收起": ["▴ 收起", "▴ Show less"],
   "▾ 展开其余 {count} 位": ["▾ 展开其余 {count} 位", "▾ Show {count} more"],

@@ -4,13 +4,13 @@ const vm = require('node:vm');
 const path = require('node:path');
 const nodes = new Map();
 function node(selector) {
- if (!nodes.has(selector)) nodes.set(selector, {textContent:'',innerHTML:'',hidden:false,value:'',dataset:{},attributes:{},classList:{add(){},remove(){},contains(){return false}},setAttribute(k,v){this.attributes[k]=v},getAttribute(k){return this.attributes[k]},closest(){return node('footer')},querySelector(s){return node(s)},querySelectorAll(){return []},focus(){},select(){},setCustomValidity(){},reportValidity(){}});
+ if (!nodes.has(selector)) nodes.set(selector, {textContent:'',innerHTML:'',hidden:false,value:'',dataset:{},attributes:{},classList:{add(){},remove(){},contains(){return false},toggle(){}},setAttribute(k,v){this.attributes[k]=v},getAttribute(k){return this.attributes[k]},closest(){return node('footer')},querySelector(s){return node(s)},querySelectorAll(){return []},focus(){},select(){},setCustomValidity(){},reportValidity(){}});
  return nodes.get(selector);
 }
 const posts=[]; const stored=new Map([['r6-pinned-person','Player Alpha']]); const alerts=[];
 const document={querySelector:node,querySelectorAll(){return []},addEventListener(){},documentElement:{lang:'zh-CN'},title:''};
 const storage={getItem:k=>stored.get(k)||null,setItem:(k,v)=>stored.set(k,v),removeItem:k=>stored.delete(k)};
-const ctx=vm.createContext({document,navigator:{language:'zh-CN',languages:['zh-CN'],userAgent:'test',platform:'Linux'},localStorage:storage,window:{localStorage:storage,addEventListener(){},matchMedia(){return {matches:false}}},fetch:async(url,opts)=>{if(opts?.method==='POST')posts.push(JSON.parse(opts.body));return {ok:true,json:async()=>({people:[{name:'Player Alpha',status:'yes',time:'any'},{name:'Player Beta',status:'no',time:'21:15'},{name:'Player Gamma',status:'maybe',time:'09:00'}]})}},setTimeout(){},alert:m=>alerts.push(m),confirm:()=>false,prompt:()=>null,Intl,Date});
+const ctx=vm.createContext({document,navigator:{language:'zh-CN',languages:['zh-CN'],userAgent:'test',platform:'Linux'},localStorage:storage,window:{localStorage:storage,addEventListener(){},matchMedia(){return {matches:false}}},fetch:async(url,opts)=>{if(url==='/api/game-status'){if(opts?.method==='POST'){const value=JSON.parse(opts.body).playing;posts.push({playing:value});return {ok:true,json:async()=>({playing:value})}}return {ok:true,json:async()=>({playing:false})}}if(opts?.method==='POST')posts.push(JSON.parse(opts.body));return {ok:true,json:async()=>({people:[{name:'Player Alpha',status:'yes',time:'any'},{name:'Player Beta',status:'no',time:'21:15'},{name:'Player Gamma',status:'maybe',time:'09:00'}]})}},setTimeout(){},alert:m=>alerts.push(m),confirm:()=>false,prompt:()=>null,Intl,Date});
 const run=code=>vm.runInContext(code,ctx);
 for(const file of ['i18n.js','app.js']) run(fs.readFileSync(path.join(__dirname,'../web',file),'utf8'));
 (async()=>{
@@ -37,6 +37,13 @@ for(const file of ['i18n.js','app.js']) run(fs.readFileSync(path.join(__dirname,
  assert.equal(document.documentElement.lang,'zh-CN');
  assert.ok(node('#cards').innerHTML.includes('随时待命'));
  assert.equal(posts.length,0);
+ await run('setGameStatus(true)');
+ assert.equal(run('gamePlaying'),true,'global status must update after the shared endpoint confirms it');
+ assert.deepEqual(posts.at(-1),{playing:true});
+ await run('setGameStatus(false)');
+ assert.equal(run('gamePlaying'),false,'the global status must be switchable back to no');
+ assert.deepEqual(posts.at(-1),{playing:false});
+ assert.equal(posts.length,2,'global switch writes only its own isolated status endpoint');
  run("showToast('消息已发送');setLanguage('en')");
  assert.equal(node('#toast').textContent,'Message sent','active toast retains its meaning when switching language');
  node('#send-note').disabled=true;
